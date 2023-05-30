@@ -1,12 +1,11 @@
-# from pettingzoo.sisl import pursuit_v4
 import my_pursuit.pursuit as pursuit_v4
-from policies import Policies
+from policies import *
 env = pursuit_v4.env(render_mode='human', n_pursuers=8,
                      n_evaders=30, surround=True)
 
 env.reset()
 
-policy = Policies["GreedyPolicy"](env)
+policy = CoordinatedPolicy(env)
 
 for agent in env.agent_iter():
     observation, reward, termination, truncation, info = env.last()

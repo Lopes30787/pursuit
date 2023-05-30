@@ -46,7 +46,6 @@ class GreedyPolicy(AbstractPolicy):
             return STAY
 
     def get_closest(self, evaders, agent):
-
         min_dist = math.inf
         selected = None
         for evader in evaders:
