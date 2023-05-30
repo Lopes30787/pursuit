@@ -185,9 +185,13 @@ class raw_env(AECEnv, EzPickle):
         pos_evaders = [
             list(self.env.evader_layer.get_position(i)) for i in range(self.env.evader_layer.n_agents())
         ]
-        pos_pursuers = [
-            list(self.env.pursuer_layer.get_position(i)) for i in range(self.env.pursuer_layer.n_agents())
-        ]
+
+        pos_pursuers = dict()
+
+        for agent_id in self.agent_name_mapping:
+            pos_pursuers[agent_id] = list(
+                self.env.pursuer_layer.get_position(self.agent_name_mapping[agent_id]))
+
         return (pos_evaders, pos_pursuers)
 
     def observation_space(self, agent: str):
