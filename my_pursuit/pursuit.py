@@ -182,8 +182,13 @@ class raw_env(AECEnv, EzPickle):
             self.render()
 
     def observe(self, agent):
-        o = self.env.safely_observe(self.agent_name_mapping[agent])
-        return np.swapaxes(o, 2, 0)
+        pos_evaders = [
+            list(self.env.evader_layer.get_position(i)) for i in range(self.env.evader_layer.n_agents())
+        ]
+        pos_pursuers = [
+            list(self.env.pursuer_layer.get_position(i)) for i in range(self.env.pursuer_layer.n_agents())
+        ]
+        return (pos_evaders, pos_pursuers)
 
     def observation_space(self, agent: str):
         return self.observation_spaces[agent]
