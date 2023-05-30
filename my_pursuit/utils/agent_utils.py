@@ -1,6 +1,6 @@
 import numpy as np
 
-from pettingzoo.sisl.pursuit.utils.discrete_agent import DiscreteAgent
+from .discrete_agent import DiscreteAgent
 
 #################################################################
 # Implements utility functions for multi-agent DRL
@@ -65,7 +65,8 @@ def feasible_position_exp(randomizer, map_matrix, expanded_mat, constraints=None
 def set_agents(agent_matrix, map_matrix):
     # check input sizes
     if agent_matrix.shape != map_matrix.shape:
-        raise ValueError("Agent configuration and map matrix have mis-matched sizes")
+        raise ValueError(
+            "Agent configuration and map matrix have mis-matched sizes")
 
     agents = []
     xs, ys = agent_matrix.shape

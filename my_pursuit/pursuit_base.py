@@ -7,9 +7,9 @@ import pygame
 from gymnasium import spaces
 from gymnasium.utils import seeding
 
-from pettingzoo.sisl.pursuit.utils import agent_utils, two_d_maps
-from pettingzoo.sisl.pursuit.utils.agent_layer import AgentLayer
-from pettingzoo.sisl.pursuit.utils.controllers import (
+from .utils import agent_utils, two_d_maps
+from .utils.agent_layer import AgentLayer
+from .utils.controllers import (
     PursuitPolicy,
     RandomPolicy,
     SingleActionPolicy,
@@ -153,7 +153,8 @@ class Pursuit:
 
         self.surround_mask = np.array([[-1, 0], [1, 0], [0, 1], [0, -1]])
 
-        self.model_state = np.zeros((4,) + self.map_matrix.shape, dtype=np.float32)
+        self.model_state = np.zeros(
+            (4,) + self.map_matrix.shape, dtype=np.float32)
         self.renderOn = False
         self.pixel_scale = 30
 
@@ -201,8 +202,10 @@ class Pursuit:
     def reset(self):
         self.evaders_gone.fill(False)
 
-        x_window_start = self.np_random.uniform(0.0, 1.0 - self.constraint_window)
-        y_window_start = self.np_random.uniform(0.0, 1.0 - self.constraint_window)
+        x_window_start = self.np_random.uniform(
+            0.0, 1.0 - self.constraint_window)
+        y_window_start = self.np_random.uniform(
+            0.0, 1.0 - self.constraint_window)
         xlb, xub = int(self.x_size * x_window_start), int(
             self.x_size * (x_window_start + self.constraint_window)
         )
@@ -219,7 +222,8 @@ class Pursuit:
             randinit=True,
             constraints=constraints,
         )
-        self.pursuer_layer = AgentLayer(self.x_size, self.y_size, self.pursuers)
+        self.pursuer_layer = AgentLayer(
+            self.x_size, self.y_size, self.pursuers)
 
         self.evaders = agent_utils.create_agents(
             self.n_evaders,
@@ -303,7 +307,8 @@ class Pursuit:
         for i in range(self.pursuer_layer.n_agents()):
             x, y = self.pursuer_layer.get_position(i)
             patch = pygame.Surface(
-                (self.pixel_scale * self.obs_range, self.pixel_scale * self.obs_range)
+                (self.pixel_scale * self.obs_range,
+                 self.pixel_scale * self.obs_range)
             )
             patch.set_alpha(128)
             patch.fill((255, 152, 72))
@@ -324,7 +329,8 @@ class Pursuit:
                 int(self.pixel_scale * y + self.pixel_scale / 2),
             )
             col = (255, 0, 0)
-            pygame.draw.circle(self.screen, col, center, int(self.pixel_scale / 3))
+            pygame.draw.circle(self.screen, col, center,
+                               int(self.pixel_scale / 3))
 
     def draw_evaders(self):
         for i in range(self.evader_layer.n_agents()):
@@ -335,7 +341,8 @@ class Pursuit:
             )
             col = (0, 0, 255)
 
-            pygame.draw.circle(self.screen, col, center, int(self.pixel_scale / 3))
+            pygame.draw.circle(self.screen, col, center,
+                               int(self.pixel_scale / 3))
 
     def draw_agent_counts(self):
         font = pygame.font.SysFont("Comic Sans MS", self.pixel_scale * 2 // 3)
@@ -400,11 +407,13 @@ class Pursuit:
             if self.render_mode == "human":
                 pygame.display.init()
                 self.screen = pygame.display.set_mode(
-                    (self.pixel_scale * self.x_size, self.pixel_scale * self.y_size)
+                    (self.pixel_scale * self.x_size,
+                     self.pixel_scale * self.y_size)
                 )
             else:
                 self.screen = pygame.Surface(
-                    (self.pixel_scale * self.x_size, self.pixel_scale * self.y_size)
+                    (self.pixel_scale * self.x_size,
+                     self.pixel_scale * self.y_size)
                 )
 
             self.renderOn = True
@@ -499,7 +508,8 @@ class Pursuit:
 
         xlo, xhi, ylo, yhi, xolo, xohi, yolo, yohi = self.obs_clip(xp, yp)
 
-        obs[0:3, xolo:xohi, yolo:yohi] = np.abs(self.model_state[0:3, xlo:xhi, ylo:yhi])
+        obs[0:3, xolo:xohi, yolo:yohi] = np.abs(
+            self.model_state[0:3, xlo:xhi, ylo:yhi])
         return obs
 
     def obs_clip(self, x, y):
@@ -539,7 +549,8 @@ class Pursuit:
                 continue
             x, y = self.evader_layer.get_position(ai)
             if self.surround:
-                pos_that_catch = self.surround_mask + self.evader_layer.get_position(ai)
+                pos_that_catch = self.surround_mask + \
+                    self.evader_layer.get_position(ai)
                 truths = np.array(
                     [
                         np.equal([xi, yi], pos_that_catch).all(axis=1)
