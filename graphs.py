@@ -12,9 +12,11 @@ policies = [RandomPolicy(env), GreedyPolicy(env), CoordinatedPolicy(env)]
 
 results = []
 rewards = []
+steps = []
+step = 0
 
 for policy in policies:
-    for i in range(5):
+    for i in range(2):
         for agent in env.agent_iter():
             observation, reward, termination, truncation, info = env.last()
 
@@ -25,22 +27,38 @@ for policy in policies:
                 action = policy(observation, agent)
 
             env.step(action)
+            step += 1
         rewards += [reward,]
+        steps += [step/8,]
+        step = 0
         env.reset()
     results += [rewards,]
+    results += [steps,]
     rewards = []
+    steps = []
     env.reset()
 
 env.close()
 
 print(results)
 results_dict = { "Random Policy"      : np.array(results[0]),
-                 "Greedy Policy"      : np.array(results[1]),
-                 "Coordinated Policy" : np.array(results[2])}
+                 "Greedy Policy"      : np.array(results[2]),
+                 "Coordinated Policy" : np.array(results[4])}
 
 compare_results(
     results_dict,
     title="Teams Comparison on 'Pursuit' Environment",
     metric="Reward per Episode",
+    colors=["orange", "green", "blue", "gray"]
+)
+
+results_dict = { "Random Policy"      : np.array(results[1]),
+                 "Greedy Policy"      : np.array(results[3]),
+                 "Coordinated Policy" : np.array(results[5])}
+
+compare_results(
+    results_dict,
+    title="Teams Comparison on 'Pursuit' Environment",
+    metric="Steps per Episode",
     colors=["orange", "green", "blue", "gray"]
 )
