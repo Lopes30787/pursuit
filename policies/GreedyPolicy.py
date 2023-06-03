@@ -2,10 +2,10 @@ from .AbstractPolicy import AbstractPolicy
 import numpy as np
 import math
 
-UP = 3
-DOWN = 2
 LEFT = 0
 RIGHT = 1
+DOWN = 2
+UP = 3
 STAY = 4
 
 
