@@ -1,7 +1,7 @@
 from .GreedyPolicy import GreedyPolicy
 
 
-class RolePolicy(GreedyPolicy):
+class RolePolicy2(GreedyPolicy):
     def __init__(self, env):
         super().__init__(env)
 
@@ -18,19 +18,20 @@ class RolePolicy(GreedyPolicy):
     def get_destination(self, evaders, pursuers, agent_name):
         leaders = self.get_leaders(pursuers)
         target_evaders = self.find_target_evaders(evaders, pursuers, leaders)
-        target_positions = self.get_adjacencies(target_evaders)
+        target_positions = [self.get_adjacencies(t) for t in target_evaders]
 
-        pursuer_names = sorted(pursuers.keys())
-        for pursuer in pursuer_names:
+        l_id = self.get_id((agent_name)) // 4
+        pursuer_names_patrol = sorted(pursuers.keys())[4*l_id:4*l_id+4]
+
+
+        target_positions_patrol = self.get_target_positions_patrol(target_positions, l_id)
+        for pursuer in pursuer_names_patrol:
             pursuer_pos = pursuers[pursuer]
-
-            if len(target_positions) == 0:
-                return pursuer_pos
-
-            chosen = self.get_closest(target_positions, pursuer_pos)
-            target_positions.remove(chosen)
+            chosen = self.get_closest(target_positions_patrol, pursuer_pos)
+            target_positions_patrol.remove(chosen)
             if pursuer == agent_name:
                 return chosen
+
 
 
     # chooses leaders deterministically (one for each four pursuers)
@@ -47,8 +48,6 @@ class RolePolicy(GreedyPolicy):
             closest_evaders = self.get_closest_evaders(evaders, pursuers[leader])
 
             for evader in closest_evaders:
-                if self.is_against_wall(evader):
-                    continue
                 if evader not in targets:
                     targets.append(evader)
                     break
@@ -57,33 +56,18 @@ class RolePolicy(GreedyPolicy):
 
     # for each target evader, calculate the coordinates of its adjacencies
     # each of these coordinates will be the destination of exactly one pursuer
-    def get_adjacencies(self, targets):
+    def get_adjacencies(self, t):
         adjacencies = []
-
-        for t in targets:
-            adjacencies.append([t[0]-1, t[1]])
-            adjacencies.append([t[0]  , t[1]-1])
-            adjacencies.append([t[0]+1, t[1]])
-            adjacencies.append([t[0]  , t[1]+1])
+        adjacencies.append([t[0]-1, t[1]])
+        adjacencies.append([t[0]  , t[1]-1])
+        adjacencies.append([t[0]+1, t[1]])
+        adjacencies.append([t[0]  , t[1]+1])
 
         return adjacencies
 
-    # verifies if a given coordinate is against a wall or in a corner
-    def is_against_wall(self, pos):
-        limit = 15
-
-        if pos[0] == 0 or pos[1] == 0:
-            return True
-
-        if pos[0] == limit or pos[1] == limit:
-            return True
-
-        return False
-
     def get_target_positions_patrol(self, target_positions, leader_id):
-        if leader_id >= len(target_positions):
-            return target_positions[:4]
-        return target_positions[leader_id:leader_id+4]
+        n_targets = len(target_positions)
+        return target_positions[leader_id % n_targets]
 
 
     """
@@ -99,6 +83,8 @@ class RolePolicy(GreedyPolicy):
 
         * unless one of the evaders is against a wall (in this case what happens?)
     """
+    def get_id(self, agent):
+        return int(agent.split("_")[1])
 
     def get_closest_evaders(self, evaders, agent):
         return sorted(evaders, key=lambda x: self.distance(x, agent))
