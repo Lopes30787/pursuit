@@ -2,71 +2,67 @@ import my_pursuit.pursuit as pursuit_v4
 from my_pursuit.utils2 import compare_results
 import numpy as np
 from policies import *
+from multiprocess import Pool
 
-env = pursuit_v4.env( max_cycles=500, x_size=16, y_size=16, shared_reward=True, n_evaders=30,
-                     n_pursuers=8,obs_range=0, n_catch=2, freeze_evaders=False, tag_reward=0.01,
-                     catch_reward=5.0, urgency_reward=-0.1, surround=True)
+ITER = 50
 
-env.reset()
 
-policies = [RandomPolicy(env), GreedyPolicy(env), CoordinatedPolicy(env), RolePolicy(env), RolePolicy2(env)]
+def do_policy(Policy):
+    global rewards, steps
 
-results = []
-rewards = []
-steps = []
-step = 0
-reward2 = [0,0,0,0,0,0,0,0]
+    env = pursuit_v4.env( max_cycles=200, x_size=16, y_size=16, shared_reward=True, n_evaders=30,
+                         n_pursuers=8, obs_range=0, n_catch=2, freeze_evaders=False, tag_reward=0.05,
+                         catch_reward=5.0, urgency_reward=-0.25, surround=True)
+    
+    reward = np.zeros(ITER)
+    step = np.zeros(ITER)
 
-for policy in policies:
-    for i in range(5):
+    for i in range(ITER):
+        env.reset()
+        
+        policy = Policy(env)
+
         for agent in env.agent_iter():
-            observation, reward, termination, truncation, info = env.last()
-            reward2.pop(0)
-            reward2.append(reward)
+            observation, r, termination, truncation, info = env.last()
+
             if termination or truncation:
                 action = None
             else:
-                # this is where you would insert your policy
                 action = policy(observation, agent)
+                step[i] += 1
+
+            reward[i] += r
 
             env.step(action)
-            step += 1
-        rewards += [sum(reward2),]
-        steps += [step/8,]
-        step = 0
-        reward2 = [0,0,0,0,0,0,0,0]
-        env.reset()
-    results += [rewards,]
-    results += [steps,]
-    rewards = []
-    steps = []
-    env.reset()
 
-env.close()
+    return Policy.__name__, reward / 8, step / 8
+    
 
-print(results)
-results_dict = { "Random Policy"      : np.array(results[0]),
-                 "Greedy Policy"      : np.array(results[2]),
-                 "Coordinated Policy" : np.array(results[4]),
-                 "Role Policy"        : np.array(results[6]),
-                 "Role Policy2"       : np.array(results[8])}
+policies = [RandomPolicy, GreedyPolicy, CoordinatedPolicy, RolePolicy, RolePolicy2, TotallyCoordinatedPolicy]
+
+
+with Pool(len(policies)) as p:
+    res = p.map(do_policy, policies)
+
+rewards = {}
+steps = {}
+
+for name, r, s in res:
+    rewards[name] = r
+    steps[name] = s
 
 compare_results(
-    results_dict,
+    rewards,
     title="Teams Comparison on 'Pursuit' Environment",
     metric="Reward per Episode",
-    colors=["orange", "green", "blue", "gray"]
+    colors=["orange", "green", "blue", "gray"],
+    filename="Fig1.png"
 )
 
-results_dict = { "Random Policy"      : np.array(results[1]),
-                 "Greedy Policy"      : np.array(results[3]),
-                 "Coordinated Policy" : np.array(results[5]),
-                 "Role Policy"        : np.array(results[7]),
-                 "Role Policy2"       : np.array(results[9])}
-
 compare_results(
-    results_dict,
+    steps,
     title="Teams Comparison on 'Pursuit' Environment",
     metric="Steps per Episode",
-    colors=["orange", "green", "blue", "gray", "red"]
+    colors=["orange", "green", "blue", "gray", "red"],
+    filename="Fig2.png"
 )
