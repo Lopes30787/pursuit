@@ -4,7 +4,7 @@ import numpy as np
 from policies import *
 from multiprocess import Pool
 
-ITER = 50
+EPISODES = 50
 
 
 def do_policy(Policy):
@@ -14,10 +14,10 @@ def do_policy(Policy):
                          n_pursuers=8, obs_range=0, n_catch=2, freeze_evaders=False, tag_reward=0.05,
                          catch_reward=5.0, urgency_reward=-0.25, surround=True)
     
-    reward = np.zeros(ITER)
-    step = np.zeros(ITER)
+    reward = np.zeros(EPISODES)
+    step = np.zeros(EPISODES)
 
-    for i in range(ITER):
+    for i in range(EPISODES):
         env.reset()
         
         policy = Policy(env)
@@ -55,7 +55,7 @@ compare_results(
     rewards,
     title="Teams Comparison on 'Pursuit' Environment",
     metric="Reward per Episode",
-    colors=["orange", "green", "blue", "gray"],
+    colors=["orange", "green", "blue", "gray", "red", "purple"],
     filename="Fig1.png"
 )
 
@@ -63,6 +63,6 @@ compare_results(
     steps,
     title="Teams Comparison on 'Pursuit' Environment",
     metric="Steps per Episode",
-    colors=["orange", "green", "blue", "gray", "red"],
+    colors=["orange", "green", "blue", "gray", "red", "purple"],
     filename="Fig2.png"
 )
