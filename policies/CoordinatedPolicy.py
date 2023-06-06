@@ -4,7 +4,7 @@ from .GreedyPolicy import GreedyPolicy
 class CoordinatedPolicy(GreedyPolicy):
     def __init__(self, env):
         super().__init__(env)
-        self.leaders = [None, None]
+        self.leaders = [None for _ in range(len(env.agents))]
 
     def __call__(self, observation, agent):
         evaders = observation[0]
@@ -20,7 +20,7 @@ class CoordinatedPolicy(GreedyPolicy):
             closest = self.get_closest_evaders(evaders, agent)
             i = 1
             self.leaders[idx] = closest[0]
-            while self.leaders[idx] == self.leaders[idx ^ 1] and len(closest) > 1:
+            while self.leaders[idx] == self.leaders[idx ^ 1] and i < len(closest):
                 self.leaders[idx] = closest[i]
                 i += 1
 
