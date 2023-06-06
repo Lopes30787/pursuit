@@ -3,7 +3,7 @@ from my_pursuit.utils2 import compare_results
 import numpy as np
 from policies import *
 
-env = pursuit_v4.env(render_mode='human', max_cycles=500, x_size=16, y_size=16, shared_reward=False, n_evaders=30,
+env = pursuit_v4.env( max_cycles=500, x_size=16, y_size=16, shared_reward=True, n_evaders=30,
                      n_pursuers=8,obs_range=0, n_catch=2, freeze_evaders=False, tag_reward=0.01,
                      catch_reward=5.0, urgency_reward=-0.1, surround=True)
 
@@ -15,12 +15,14 @@ results = []
 rewards = []
 steps = []
 step = 0
+reward2 = [0,0,0,0,0,0,0,0]
 
 for policy in policies:
-    for i in range(3):
+    for i in range(5):
         for agent in env.agent_iter():
             observation, reward, termination, truncation, info = env.last()
-
+            reward2.pop(0)
+            reward2.append(reward)
             if termination or truncation:
                 action = None
             else:
@@ -29,9 +31,10 @@ for policy in policies:
 
             env.step(action)
             step += 1
-        rewards += [reward,]
+        rewards += [sum(reward2),]
         steps += [step/8,]
         step = 0
+        reward2 = [0,0,0,0,0,0,0,0]
         env.reset()
     results += [rewards,]
     results += [steps,]
