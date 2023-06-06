@@ -3,12 +3,13 @@ from my_pursuit.utils2 import compare_results
 import numpy as np
 from policies import *
 
-env = pursuit_v4.env(render_mode='human', n_pursuers=8,
-                     n_evaders=30, surround=True)
+env = pursuit_v4.env(render_mode='human', max_cycles=500, x_size=16, y_size=16, shared_reward=False, n_evaders=30,
+                     n_pursuers=8,obs_range=0, n_catch=2, freeze_evaders=False, tag_reward=0.01,
+                     catch_reward=5.0, urgency_reward=-0.1, surround=True)
 
 env.reset()
 
-policies = [RandomPolicy(env), GreedyPolicy(env), CoordinatedPolicy(env)]
+policies = [RandomPolicy(env), GreedyPolicy(env), CoordinatedPolicy(env), RolePolicy(env), RolePolicy2(env)]
 
 results = []
 rewards = []
@@ -16,7 +17,7 @@ steps = []
 step = 0
 
 for policy in policies:
-    for i in range(2):
+    for i in range(3):
         for agent in env.agent_iter():
             observation, reward, termination, truncation, info = env.last()
 
@@ -43,7 +44,9 @@ env.close()
 print(results)
 results_dict = { "Random Policy"      : np.array(results[0]),
                  "Greedy Policy"      : np.array(results[2]),
-                 "Coordinated Policy" : np.array(results[4])}
+                 "Coordinated Policy" : np.array(results[4]),
+                 "Role Policy"        : np.array(results[6]),
+                 "Role Policy2"       : np.array(results[8])}
 
 compare_results(
     results_dict,
@@ -54,11 +57,13 @@ compare_results(
 
 results_dict = { "Random Policy"      : np.array(results[1]),
                  "Greedy Policy"      : np.array(results[3]),
-                 "Coordinated Policy" : np.array(results[5])}
+                 "Coordinated Policy" : np.array(results[5]),
+                 "Role Policy"        : np.array(results[7]),
+                 "Role Policy2"       : np.array(results[9])}
 
 compare_results(
     results_dict,
     title="Teams Comparison on 'Pursuit' Environment",
     metric="Steps per Episode",
-    colors=["orange", "green", "blue", "gray"]
+    colors=["orange", "green", "blue", "gray", "red"]
 )
