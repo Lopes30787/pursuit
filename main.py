@@ -5,7 +5,7 @@ env = pursuit_v4.env(render_mode='human', n_pursuers=8,
 
 env.reset()
 
-policy = CoordinatedPolicy(env)
+policy = TotallyCoordinatedPolicy(env)
 
 for agent in env.agent_iter():
     observation, reward, termination, truncation, info = env.last()

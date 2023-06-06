@@ -1,7 +1,7 @@
 import abc
 
 
-class AbstractPolicy(abc.ABC):
+class AbstractPolicy:
     def __init__(self, env):
         self.env = env
 
