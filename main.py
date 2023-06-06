@@ -1,7 +1,7 @@
 import my_pursuit.pursuit as pursuit_v4
 from policies import *
 env = pursuit_v4.env(render_mode='human', n_pursuers=8,
-                     n_evaders=30, surround=False)
+                     n_evaders=30, surround=True)
 
 env.reset()
 
