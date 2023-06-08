@@ -1,7 +1,7 @@
 from .GreedyPolicy import GreedyPolicy
 
 
-class RolePolicy(GreedyPolicy):
+class RolePolicyBad(GreedyPolicy):
     def __init__(self, env):
         super().__init__(env)
 
