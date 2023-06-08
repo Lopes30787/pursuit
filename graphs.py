@@ -10,16 +10,16 @@ EPISODES = 50
 def do_policy(Policy):
     global rewards, steps
 
-    env = pursuit_v4.env( max_cycles=200, x_size=16, y_size=16, shared_reward=True, n_evaders=30,
+    env = pursuit_v4.env( max_cycles=250, x_size=16, y_size=16, shared_reward=True, n_evaders=30,
                          n_pursuers=8, obs_range=0, n_catch=2, freeze_evaders=False, tag_reward=0.05,
                          catch_reward=5.0, urgency_reward=-0.25, surround=True)
-    
+
     reward = np.zeros(EPISODES)
     step = np.zeros(EPISODES)
 
     for i in range(EPISODES):
         env.reset()
-        
+
         policy = Policy(env)
 
         for agent in env.agent_iter():
@@ -36,9 +36,9 @@ def do_policy(Policy):
             env.step(action)
 
     return Policy.__name__, reward / 8, step / 8
-    
 
-policies = [RandomPolicy, GreedyPolicy, CoordinatedPolicy, RolePolicy, RolePolicy2, TotallyCoordinatedPolicy]
+
+policies = [RandomPolicy, GreedyPolicy, CoordinatedPolicy, RolePolicy]
 
 
 with Pool(len(policies)) as p:
@@ -53,7 +53,7 @@ for name, r, s in res:
 
 compare_results(
     rewards,
-    title="Teams Comparison on 'Pursuit' Environment",
+    title="Strategy Comparison on 'Pursuit' Environment - Reward",
     metric="Reward per Episode",
     colors=["orange", "green", "blue", "gray", "red", "purple"],
     filename="Fig1.png"
@@ -61,7 +61,7 @@ compare_results(
 
 compare_results(
     steps,
-    title="Teams Comparison on 'Pursuit' Environment",
+    title="Strategy Comparison on 'Pursuit' Environment - Steps",
     metric="Steps per Episode",
     colors=["orange", "green", "blue", "gray", "red", "purple"],
     filename="Fig2.png"
