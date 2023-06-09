@@ -1,7 +1,7 @@
 from .GreedyPolicy import GreedyPolicy
 
 
-class CoordinatedPolicy(GreedyPolicy):
+class SocialPolicy(GreedyPolicy):
     def __init__(self, env):
         super().__init__(env)
         self.leaders = [None for _ in range(len(env.agents))]
@@ -35,9 +35,6 @@ class CoordinatedPolicy(GreedyPolicy):
                 return [follow[0], follow[1] - 1]
             case 3:  # Down
                 return [follow[0] - 1, follow[1]]
-
-    def get_id(self, agent):
-        return int(agent.split("_")[1])
 
     def get_closest_evaders(self, evaders, agent):
         return sorted(evaders, key=lambda x: self.distance(x, agent))

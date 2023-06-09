@@ -83,8 +83,5 @@ class RolePolicy(GreedyPolicy):
 
         * unless one of the evaders is against a wall (in this case what happens?)
     """
-    def get_id(self, agent):
-        return int(agent.split("_")[1])
-
     def get_closest_evaders(self, evaders, agent):
         return sorted(evaders, key=lambda x: self.distance(x, agent))
