@@ -30,15 +30,14 @@ def do_policy(Policy):
             else:
                 action = policy(observation, agent)
                 step[i] += 1
-
-            reward[i] += r
+                reward[i] += r
 
             env.step(action)
 
     return Policy.__name__, reward / 8, step / 8
 
 
-policies = [RandomPolicy, GreedyPolicy, CoordinatedPolicy, RolePolicy]
+policies = [RandomPolicy, GreedyPolicy, SocialPolicy, RolePolicy, MixedPolicy]
 
 
 with Pool(len(policies)) as p:
@@ -55,14 +54,14 @@ compare_results(
     rewards,
     title="Strategy Comparison on 'Pursuit' Environment - Reward",
     metric="Reward per Episode",
-    colors=["orange", "green", "blue", "gray", "red", "purple"],
-    filename="Fig1.png"
+    colors=["orange", "green", "blue", "red", "purple"],
+    # filename="Fig1.png"
 )
 
 compare_results(
     steps,
     title="Strategy Comparison on 'Pursuit' Environment - Steps",
     metric="Steps per Episode",
-    colors=["orange", "green", "blue", "gray", "red", "purple"],
-    filename="Fig2.png"
+    colors=["orange", "green", "blue", "red", "purple"],
+    # filename="Fig2.png"
 )
